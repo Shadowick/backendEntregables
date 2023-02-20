@@ -1,6 +1,7 @@
 class ProductManager {
   constructor() {
     this.products = []
+    this.idCounter = 0;
   }
   
   getProducts() {
@@ -9,7 +10,6 @@ class ProductManager {
 
   addProducts(title, description, price, thumbnail, code, stock) {
     const product = {
-      id: this.#generateId(),
       title,
       description,
       price,
@@ -17,31 +17,36 @@ class ProductManager {
       code,
       stock,
     }
-  this.products.push(product);
-  }
 
-  #generateId() {
-    const id =
-      this.products.length === 0
-        ? 1
-        : this.products[this.products.length - 1].id + 1
-    return id
-  }
-}
-
-function contieneProducto(producto, lista) {
-  let i;
-  for (i = 0; i < lista.length; i++) {
-      if (lista[i] === producto) {
-          return true;
+    if(!product.code || !product.stock || !product.title || !product.description || !product.price || !product.thumbnail) {
+      console.log('Error: code, stock, title, description, price or thumbnail missing');
+        return;
       }
+    if (this.products.some(p => p.code === product.code)) {
+      console.log(`Error: product with code ${product.code} already exists`);
+      return;
+    }
+
+      const newProduct = {
+        ...product,
+        id: ++this.idCounter
+      };
+      this.products.push(newProduct);
+      console.log(`Product with id ${newProduct.id} has been added`);
   }
-  return false;
+  getProductById(id) {
+    const product = this.products.find(p => p.id === id);
+    if (!product) {
+      console.log('Error: product not found');
+    }
+    return product;
+  }
 }
 
 const manager = new ProductManager()
 manager.addProducts('Black Adam', 'Pelicula acerca de un superheroe...', 25, "Sin imágen","abc123", 10)
-manager.addProducts('Producto2', 'Pelicula acerca de un superheroe...', 40, "Sin imágen2","def456", 15)
-manager.addProducts('Producto3', 'Pelicula acerca de un superheroe...', 50, "Sin imágen3","ghi789", 20)
-manager.addProducts('Producto4', 'Pelicula acerca de un superheroe...', 60, "Sin imágen4","abc123", 23)
+//Ejemplo con todos los datos correctos//
+manager.addProducts('Black Adam', 'Pelicula acerca de un superheroe...', "Sin imágen","abc123", 10)
+//Ejemplo dato faltante//
 console.log(manager)
+console.log(manager.getProductById())
